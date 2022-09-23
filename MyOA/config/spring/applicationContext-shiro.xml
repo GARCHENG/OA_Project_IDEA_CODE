@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <bean name="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"></property>
+        <property name="loginUrl" value="/login"></property>
+        <property name="successUrl" value="/home"></property>
+        <property name="unauthorizedUrl" value="/refuse.html"></property>
+        <property name="filterChainDefinitions">
+            <value>
+                <!--放行静态资源-->
+                /bootstrap/**=anon
+                /css/**=anon
+                /js/**=anon
+                /static/**=anon
+                /img/**=anon
+
+                <!--配置权限-->
+                /apply_baoxiao.jsp=perms[baoxiao:apply]
+                /myBaoxiaoBill=perms[baoxiao:billquery]
+                /myTaskList=perms[baoxiao:tasklist]
+                /add_process.jsp=perms[baoxiao:publish]
+                /processDefinitionList=perms[baoxiao:processlist]
+                /findUserList=perms[user:query]
+                /toAddRole=perms[user:create]
+                /delDeployment=perms[baoxiao:remove]
+                /viewImage=perms[baoxiao:viewimage]
+<!--                /findRoles=perms[baoxiao:rolelist]-->
+
+                <!--退出登录-->
+                /logout=logout
+
+                <!--其余的拦截-->
+                /**=authc
+
+
+            </value>
+        </property>
+    </bean>
+
+    <bean name="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="customerRealm"></property>
+    </bean>
+
+    <bean name="customerRealm" class="com.gec.realm.MyCustomerRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"></property>
+    </bean>
+
+    <bean name="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"></property>
+        <property name="hashIterations" value="2"></property>
+    </bean>
+
+</beans>
